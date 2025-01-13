@@ -28,5 +28,6 @@ public class Character : MonoBehaviour
         right.y = 0;
 
         transform.Translate((forward * moveDir.y + right * moveDir.x) * 5 * Time.deltaTime);
+        transform.rotation = Quaternion.LookRotation(forward, Vector3.up);
     }
 }
