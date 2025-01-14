@@ -55,14 +55,14 @@ public class Character : MonoBehaviour
             isRun = false;
         }
 
-        targetSpeed = Mathf.Lerp(targetSpeed, speed, 0.1f);
+        targetSpeed = Mathf.Lerp(targetSpeed, speed, 0.03f);
         animator.SetFloat("Move", targetSpeed / runSpeed);
 
         Vector3 moveVector = (forward * moveDir.y + right * moveDir.x).normalized * speed;
 
         characterController.Move((jump * Vector3.up + moveVector) * Time.deltaTime);
         if(moveDir != Vector2.zero)
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(moveVector, Vector3.up), 0.3f);
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(moveVector, Vector3.up), 0.05f);
 
         jump += Physics.gravity.y * Time.deltaTime;
 
