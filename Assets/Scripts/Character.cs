@@ -5,6 +5,7 @@ public class Character : MonoBehaviour
 {
     private CharacterController characterController;
     private Vector2 moveDir = Vector2.zero;
+    private float jump = -10;
     [SerializeField]private Transform followCamTransform;
     private void Awake() {
         characterController = GetComponent<CharacterController>();
@@ -21,13 +22,28 @@ public class Character : MonoBehaviour
         moveDir = inputValue.Get<Vector2>();
     }
 
-    private void Update() {
+    public void OnJump(InputValue inputValue)
+    {
+        jump += inputValue.Get<float>() * 13f;
+    }
+
+    private void Update()
+    {
         Vector3 forward = followCamTransform.forward;
         forward.y = 0;
         Vector3 right = followCamTransform.right;
+
         right.y = 0;
 
-        transform.Translate((forward * moveDir.y + right * moveDir.x) * 5 * Time.deltaTime);
+        //transform.Translate(5 * Time.deltaTime * (forward * moveDir.y + right * moveDir.x));
         transform.rotation = Quaternion.LookRotation(forward, Vector3.up);
+
+        characterController.Move((jump * Vector3.up + (forward * moveDir.y + right * moveDir.x) * 5) * Time.deltaTime);
+        jump += Physics.gravity.y * Time.deltaTime;
+
+        if (characterController.isGrounded)
+        {
+            jump = -2f;
+        }
     }
 }
