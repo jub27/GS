@@ -4,17 +4,19 @@ using UnityEngine.InputSystem;
 public class Character : MonoBehaviour
 {
     private CharacterController characterController;
+    private Animator animator;
     private Vector2 moveDir = Vector2.zero;
     private float jump = -10;
     [SerializeField]private Transform followCamTransform;
+    private float speed = 0;
+    private float runSpeed = 5f;
+    private float walkSPeed = 3f;
+    private bool isRun = false;
+    private float targetSpeed = 0;
+
     private void Awake() {
         characterController = GetComponent<CharacterController>();
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
+        animator = GetComponent<Animator>();
     }
 
     public void OnMove(InputValue inputValue)
@@ -27,18 +29,41 @@ public class Character : MonoBehaviour
         jump += inputValue.Get<float>() * 13f;
     }
 
+    public void OnSprint(InputValue inputValue)
+    {
+        isRun = inputValue.Get<float>() != 0;
+    }
+
     private void Update()
     {
         Vector3 forward = followCamTransform.forward;
         forward.y = 0;
         Vector3 right = followCamTransform.right;
-
         right.y = 0;
+        forward.Normalize();
+        right.Normalize();
 
-        //transform.Translate(5 * Time.deltaTime * (forward * moveDir.y + right * moveDir.x));
-        transform.rotation = Quaternion.LookRotation(forward, Vector3.up);
+        
 
-        characterController.Move((jump * Vector3.up + (forward * moveDir.y + right * moveDir.x) * 5) * Time.deltaTime);
+        speed = moveDir.normalized.magnitude * walkSPeed;
+
+        if(isRun)
+            speed = runSpeed;
+        if(moveDir == Vector2.zero)
+        {
+            speed = 0;
+            isRun = false;
+        }
+
+        targetSpeed = Mathf.Lerp(targetSpeed, speed, 0.1f);
+        animator.SetFloat("Move", targetSpeed / runSpeed);
+
+        Vector3 moveVector = (forward * moveDir.y + right * moveDir.x).normalized * speed;
+
+        characterController.Move((jump * Vector3.up + moveVector) * Time.deltaTime);
+        if(moveDir != Vector2.zero)
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(moveVector, Vector3.up), 0.3f);
+
         jump += Physics.gravity.y * Time.deltaTime;
 
         if (characterController.isGrounded)
