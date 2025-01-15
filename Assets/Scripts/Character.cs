@@ -3,38 +3,42 @@ using UnityEngine.InputSystem;
 
 public class Character : MonoBehaviour
 {
+    private const float RUN_SPEED = 5f;
+    private const float WALK_SPEED = 3f;
+
     private CharacterController characterController;
     private Animator animator;
-    private Vector2 moveDir = Vector2.zero;
+    [SerializeField] private Transform followCamTransform;
+
     private float jump = -10;
-    [SerializeField]private Transform followCamTransform;
     private float speed = 0;
-    private float runSpeed = 5f;
-    private float walkSPeed = 3f;
     private bool isRun = false;
     private float targetSpeed = 0;
+    private Vector3 moveDir = Vector3.zero;
 
     private void Awake() {
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
     }
 
-    public void OnMove(InputValue inputValue)
+    private void OnMove(InputValue inputValue)
     {
-        moveDir = inputValue.Get<Vector2>();
+        Vector2 inputVector = inputValue.Get<Vector2>();
+        SetDirection(inputVector);
+        SetSpeed(inputVector);
     }
 
-    public void OnJump(InputValue inputValue)
+    private void OnJump(InputValue inputValue)
     {
         jump += inputValue.Get<float>() * 13f;
     }
 
-    public void OnSprint(InputValue inputValue)
+    private void OnSprint(InputValue inputValue)
     {
         isRun = inputValue.Get<float>() != 0;
     }
 
-    private void Update()
+    private void SetDirection(Vector2 inputDir)
     {
         Vector3 forward = followCamTransform.forward;
         forward.y = 0;
@@ -43,32 +47,30 @@ public class Character : MonoBehaviour
         forward.Normalize();
         right.Normalize();
 
-        
+        moveDir = right * inputDir.x + forward * inputDir.y;
+        moveDir.Normalize();
+    }
 
-        speed = moveDir.normalized.magnitude * walkSPeed;
-
-        if(isRun)
-            speed = runSpeed;
-        if(moveDir == Vector2.zero)
-        {
-            speed = 0;
+    private void SetSpeed(Vector2 inputDir)
+    {
+        speed = inputDir.normalized.magnitude * WALK_SPEED;
+        if (speed == 0)
             isRun = false;
-        }
+        if (isRun)
+            speed = RUN_SPEED;
+    }
 
-        targetSpeed = Mathf.Lerp(targetSpeed, speed, 0.03f);
-        animator.SetFloat("Move", targetSpeed / runSpeed);
+    private void FixedUpdate()
+    {
+        targetSpeed = Mathf.Lerp(targetSpeed, speed, 0.15f);
+        animator.SetFloat("Move", targetSpeed / RUN_SPEED);
 
-        Vector3 moveVector = (forward * moveDir.y + right * moveDir.x).normalized * speed;
-
-        characterController.Move((jump * Vector3.up + moveVector) * Time.deltaTime);
-        if(moveDir != Vector2.zero)
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(moveVector, Vector3.up), 0.05f);
+        characterController.Move((jump * Vector3.up + moveDir * speed) * Time.deltaTime);
+        if(moveDir != Vector3.zero)
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(moveDir, Vector3.up), 0.15f);
 
         jump += Physics.gravity.y * Time.deltaTime;
-
         if (characterController.isGrounded)
-        {
             jump = -2f;
-        }
     }
 }
