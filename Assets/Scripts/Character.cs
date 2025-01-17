@@ -12,6 +12,7 @@ public class Character : MonoBehaviour
 
     private float jump = -10;
     private bool isRun = false;
+    private bool isAttack = false;
     private float targetSpeed = 0;
     private Vector2 inputVector = Vector2.zero;
 
@@ -43,6 +44,23 @@ public class Character : MonoBehaviour
         isRun = inputValue.Get<float>() != 0;
     }
 
+    private void OnAttack(InputValue inputValue)
+    {
+        if (inputValue.Get<float>() != 0 && characterController.isGrounded && !isAttack)
+        {
+            isAttack = true;
+            isRun = false;
+            animator.SetTrigger("Attack");
+            targetSpeed = 0;
+            animator.SetFloat("Move", 0);
+        }
+    }
+
+    private void OnAttackEnd()
+    {
+        isAttack = false;
+    }
+
     private Vector3 GetDirection(Vector2 inputDir)
     {
         Vector3 forward = followCamTransform.forward;
@@ -63,6 +81,8 @@ public class Character : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (isAttack)
+            return;
         Vector3 moveDir = GetDirection(inputVector);
         float speed = GetSpeed(inputVector);
         targetSpeed = Mathf.Lerp(targetSpeed, speed, 0.15f);
