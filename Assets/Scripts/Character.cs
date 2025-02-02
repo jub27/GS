@@ -29,7 +29,6 @@ public class Character : MonoBehaviour
     private void OnLook(InputValue inputValue)
     {
         Vector2 inputVector = inputValue.Get<Vector2>();
-        Debug.Log(inputVector);
     }
 
     private void OnJump(InputValue inputValue)
