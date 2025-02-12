@@ -9,11 +9,13 @@ public class Character : MonoBehaviour
     private CharacterController characterController;
     private Animator animator;
     [SerializeField] private Transform followCamTransform;
+    [SerializeField] private AttackDataScriptableObject attackDataScriptableObject;
 
     private float jump = -10;
     private bool isRun = false;
     private float targetSpeed = 0;
     private Vector2 inputVector = Vector2.zero;
+    private ParticleSystem[] attackEffects;
 
     private bool IsMoveState
     {
@@ -27,6 +29,15 @@ public class Character : MonoBehaviour
     private void Awake() {
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
+        animator.runtimeAnimatorController = attackDataScriptableObject.animatorController;
+        attackEffects = new ParticleSystem[attackDataScriptableObject.attackEffects.Length];
+        for(int i = 0; i < attackEffects.Length; i++)
+        {
+            attackEffects[i] = Instantiate(attackDataScriptableObject.attackEffects[i], this.transform);
+            // attackEffects[i].transform.localPosition = attackEffects[i].transform.position;
+            // attackEffects[i].transform.localRotation = attackEffects[i].transform.rotation;
+            attackEffects[i].Stop();
+        }
     }
 
     private void OnMove(InputValue inputValue)
@@ -61,7 +72,14 @@ public class Character : MonoBehaviour
             animator.SetTrigger("Attack");
             targetSpeed = 0;
             animator.SetFloat("Move", 0);
+            animator.applyRootMotion = true;
         }
+    }
+
+    public void ShowAttackEffect(int index)
+    {
+        Debug.Log(index);
+        attackEffects[index].Play();
     }
 
     private Vector3 GetDirection(Vector2 inputDir)
@@ -94,6 +112,10 @@ public class Character : MonoBehaviour
             if(animator.GetBool("IsGround"))
                 speed = 0;
             moveDir = transform.forward;
+        }
+        else
+        {
+            animator.applyRootMotion = false;
         }
 
         if (characterController.isGrounded)
