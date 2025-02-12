@@ -1375,7 +1375,7 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 3
   m_Height: 1.82
-  m_Radius: 0.01
+  m_Radius: 0.001
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
@@ -2207,7 +2207,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -7557540490364101082, guid: 48bcd4b26a0bf674e80838debd87580d, type: 3}
+  - {fileID: 2100000, guid: 5177628be5c06954d8ac22424ce39f55, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2823,7 +2823,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -8474651742996372913, guid: 48bcd4b26a0bf674e80838debd87580d, type: 3}
+  - {fileID: 2100000, guid: 1c98e22113c55de4b875a81ec6df2397, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
