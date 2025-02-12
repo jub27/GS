@@ -44,6 +44,8 @@ public class Character : MonoBehaviour
         if (!characterController.isGrounded || !IsMoveState)
             return;
         jump = inputValue.Get<float>() * 11f;
+        animator.SetTrigger("Jump");
+        animator.SetBool("IsGround", false);
     }
 
     private void OnSprint(InputValue inputValue)
@@ -89,7 +91,8 @@ public class Character : MonoBehaviour
         
         if(!IsMoveState)
         {
-            speed = 0;
+            if(animator.GetBool("IsGround"))
+                speed = 0;
             moveDir = transform.forward;
         }
 
