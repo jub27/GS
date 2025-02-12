@@ -9,7 +9,8 @@ public class Character : MonoBehaviour
     private CharacterController characterController;
     private Animator animator;
     [SerializeField] private Transform followCamTransform;
-    [SerializeField] private AttackDataScriptableObject attackDataScriptableObject;
+    [SerializeField] private AttackData attackDataScriptableObject;
+    [SerializeField] private CharacterStatData characterStatData;
 
     private float jump = -10;
     private bool isRun = false;
@@ -38,16 +39,13 @@ public class Character : MonoBehaviour
             // attackEffects[i].transform.localRotation = attackEffects[i].transform.rotation;
             attackEffects[i].Stop();
         }
+        characterStatData.CurHp = characterStatData.MaxHp;
+        HpBar.Instance.SetCharacterStatData(characterStatData);
     }
 
     private void OnMove(InputValue inputValue)
     {
-        inputVector = inputValue.Get<Vector2>();
-    }
-
-    private void OnLook(InputValue inputValue)
-    {
-        Vector2 inputVector = inputValue.Get<Vector2>();
+        this.inputVector = inputValue.Get<Vector2>();
     }
 
     private void OnJump(InputValue inputValue)
@@ -102,6 +100,8 @@ public class Character : MonoBehaviour
 
     private void FixedUpdate()
     {
+        characterStatData.CurHp -= 1;
+        Debug.Log(characterStatData.CurHp);
         Vector3 moveDir = GetDirection(inputVector);
         float speed = GetSpeed(inputVector);
         targetSpeed = Mathf.Lerp(targetSpeed, speed, 0.15f);
