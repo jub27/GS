@@ -45,7 +45,7 @@ public class Character : MonoBehaviour
 
     private void OnAttack(InputValue inputValue)
     {
-        if (inputValue.Get<float>() != 0 && characterController.isGrounded && !isAttack)
+        if (inputValue.Get<float>() != 0 && characterController.isGrounded)
         {
             isAttack = true;
             isRun = false;
