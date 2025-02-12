@@ -32,7 +32,7 @@ public class FootIK : MonoBehaviour
             // 걸을 수 있는 땅이라면
             if (hit.transform.CompareTag("Ground"))
             {
-                Debug.Log($"{avatarIKGoal} On Ground");
+                //Debug.Log($"{avatarIKGoal} On Ground");
                 Vector3 footPosition = hit.point;
                 footPosition.y += rayDistance;
 

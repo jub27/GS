@@ -12,9 +12,17 @@ public class Character : MonoBehaviour
 
     private float jump = -10;
     private bool isRun = false;
-    private bool isAttack = false;
     private float targetSpeed = 0;
     private Vector2 inputVector = Vector2.zero;
+
+    private bool IsMoveState
+    {
+        get
+        {
+            AnimatorStateInfo animatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
+            return animatorStateInfo.shortNameHash == Animator.StringToHash("Move");
+        }
+    }
 
     private void Awake() {
         characterController = GetComponent<CharacterController>();
@@ -33,7 +41,7 @@ public class Character : MonoBehaviour
 
     private void OnJump(InputValue inputValue)
     {
-        if (!characterController.isGrounded)
+        if (!characterController.isGrounded || !IsMoveState)
             return;
         jump = inputValue.Get<float>() * 11f;
     }
@@ -47,17 +55,11 @@ public class Character : MonoBehaviour
     {
         if (inputValue.Get<float>() != 0 && characterController.isGrounded)
         {
-            isAttack = true;
             isRun = false;
             animator.SetTrigger("Attack");
             targetSpeed = 0;
             animator.SetFloat("Move", 0);
         }
-    }
-
-    private void OnAttackEnd()
-    {
-        isAttack = false;
     }
 
     private Vector3 GetDirection(Vector2 inputDir)
@@ -80,13 +82,17 @@ public class Character : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isAttack)
-            return;
         Vector3 moveDir = GetDirection(inputVector);
         float speed = GetSpeed(inputVector);
         targetSpeed = Mathf.Lerp(targetSpeed, speed, 0.15f);
         animator.SetFloat("Move", targetSpeed / (WALK_SPEED * RUN_MULTIPLY));
         
+        if(!IsMoveState)
+        {
+            speed = 0;
+            moveDir = transform.forward;
+        }
+
         if (characterController.isGrounded)
             characterController.Move((jump * Vector3.up + moveDir * speed) * Time.fixedDeltaTime);
         else
