@@ -17,6 +17,8 @@ public class Character : MonoBehaviour
     private float targetSpeed = 0;
     private Vector2 inputVector = Vector2.zero;
     private ParticleSystem[] attackEffects;
+    private Quaternion[] attackEffectsOriginLocalRotations;
+    private Vector3[] attackEffectsOriginLocalPositions;
 
     private bool IsMoveState
     {
@@ -32,12 +34,14 @@ public class Character : MonoBehaviour
         animator = GetComponent<Animator>();
         animator.runtimeAnimatorController = attackDataScriptableObject.animatorController;
         attackEffects = new ParticleSystem[attackDataScriptableObject.attackEffects.Length];
+        attackEffectsOriginLocalRotations = new Quaternion[attackDataScriptableObject.attackEffects.Length];
+        attackEffectsOriginLocalPositions = new Vector3[attackDataScriptableObject.attackEffects.Length];
         for(int i = 0; i < attackEffects.Length; i++)
         {
-            attackEffects[i] = Instantiate(attackDataScriptableObject.attackEffects[i], this.transform);
-            // attackEffects[i].transform.localPosition = attackEffects[i].transform.position;
-            // attackEffects[i].transform.localRotation = attackEffects[i].transform.rotation;
+            attackEffects[i] = Instantiate(attackDataScriptableObject.attackEffects[i]);
             attackEffects[i].Stop();
+            attackEffectsOriginLocalRotations[i] = attackEffects[i].transform.localRotation;
+            attackEffectsOriginLocalPositions[i] = attackEffects[i].transform.localPosition;
         }
         characterStatData.CurHp = characterStatData.MaxHp;
         HpBar.Instance.SetCharacterStatData(characterStatData);
@@ -77,6 +81,8 @@ public class Character : MonoBehaviour
     public void ShowAttackEffect(int index)
     {
         Debug.Log(index);
+        attackEffects[index].transform.position = transform.position + attackEffectsOriginLocalPositions[index];
+        attackEffects[index].transform.rotation = transform.rotation * attackEffectsOriginLocalRotations[index];
         attackEffects[index].Play();
     }
 
@@ -98,10 +104,9 @@ public class Character : MonoBehaviour
         return inputVector.normalized.magnitude * WALK_SPEED * (isRun ? RUN_MULTIPLY : 1);
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         characterStatData.CurHp -= 1;
-        Debug.Log(characterStatData.CurHp);
         Vector3 moveDir = GetDirection(inputVector);
         float speed = GetSpeed(inputVector);
         targetSpeed = Mathf.Lerp(targetSpeed, speed, 0.15f);
@@ -119,12 +124,12 @@ public class Character : MonoBehaviour
         }
 
         if (characterController.isGrounded)
-            characterController.Move((jump * Vector3.up + moveDir * speed) * Time.fixedDeltaTime);
+            characterController.Move((jump * Vector3.up + moveDir * speed) * Time.deltaTime);
         else
-            characterController.Move((jump * Vector3.up + transform.forward * speed) * Time.fixedDeltaTime);
+            characterController.Move((jump * Vector3.up + transform.forward * speed) * Time.deltaTime);
         if(moveDir != Vector3.zero && characterController.isGrounded)
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(moveDir, Vector3.up), 0.15f);
-        jump += Physics.gravity.y * Time.fixedDeltaTime;
+        jump += Physics.gravity.y * Time.deltaTime;
         if (characterController.isGrounded)
             jump = -2f;
         animator.SetBool("IsGround", characterController.isGrounded);
