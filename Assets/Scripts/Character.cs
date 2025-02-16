@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,7 +9,7 @@ public class Character : MonoBehaviour
 
     private CharacterController characterController;
     private Animator animator;
-    [SerializeField] private Transform followCamTransform;
+    [SerializeField] private Transform followCamTarget;
     [SerializeField] private AttackData attackDataScriptableObject;
     [SerializeField] private CharacterStatData characterStatData;
 
@@ -19,6 +20,9 @@ public class Character : MonoBehaviour
     private ParticleSystem[] attackEffects;
     private Quaternion[] attackEffectsOriginLocalRotations;
     private Vector3[] attackEffectsOriginLocalPositions;
+
+    public event Action OnShow;
+    public event Action OnHide;
 
     private bool IsMoveState
     {
@@ -45,6 +49,19 @@ public class Character : MonoBehaviour
         }
         characterStatData.CurHp = characterStatData.MaxHp;
         HpBar.Instance.SetCharacterStatData(characterStatData);
+        OnShow += () => gameObject.SetActive(true);
+        OnShow += () => FollowCam.Instance.SetFollowTarget(followCamTarget);
+        OnHide += () => gameObject.SetActive(false);
+    }
+
+    public void Show()
+    {
+        OnShow?.Invoke();
+    }
+
+    public void Hide()
+    {
+        OnHide?.Invoke();
     }
 
     private void OnMove(InputValue inputValue)
@@ -88,9 +105,9 @@ public class Character : MonoBehaviour
 
     private Vector3 GetDirection(Vector2 inputDir)
     {
-        Vector3 forward = followCamTransform.forward;
+        Vector3 forward = FollowCam.Instance.transform.forward;
         forward.y = 0;
-        Vector3 right = followCamTransform.right;
+        Vector3 right = FollowCam.Instance.transform.right;
         right.y = 0;
         forward.Normalize();
         right.Normalize();

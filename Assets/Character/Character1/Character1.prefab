@@ -1174,7 +1174,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ff19ac238bd25247ac7c2fad0f47aeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  followCamTransform: {fileID: 0}
+  followCamTarget: {fileID: 5023698768964343972}
   attackDataScriptableObject: {fileID: 11400000, guid: 0c8472f713630b94db7c6a7eb72efb9e, type: 2}
   characterStatData: {fileID: 11400000, guid: 910a8269e39e65941908382758445d44, type: 2}
 --- !u!114 &5776427712049276574
