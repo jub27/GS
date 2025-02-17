@@ -43,6 +43,8 @@ public class GameManager : MonoBehaviour
         if(currentCharacter == characters[characterIndex])
             return;
         currentCharacter.Hide();
+        Vector3 position = currentCharacter.transform.position;
+        characters[characterIndex].transform.position = position;
         characters[characterIndex].Show();
         currentCharacter = characters[characterIndex];
     }
