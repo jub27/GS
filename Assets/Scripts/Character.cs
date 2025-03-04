@@ -97,10 +97,30 @@ public class Character : MonoBehaviour
 
     public void ShowAttackEffect(int index)
     {
-        Debug.Log(index);
         attackEffects[index].transform.position = transform.position + attackEffectsOriginLocalPositions[index];
         attackEffects[index].transform.rotation = transform.rotation * attackEffectsOriginLocalRotations[index];
         attackEffects[index].Play();
+    }
+
+    public void EnableAttackCollider(int index)
+    {
+        Debug.Log("@@");
+        attackDataScriptableObject.colliders[index].enabled = true;
+    }
+
+    public void DisableAttackCollider(int index)
+    {
+        Debug.Log("!!");
+        attackDataScriptableObject.colliders[index].enabled = false;
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        IDamageable damageable = other.GetComponent<IDamageable>();
+        if(damageable != null)
+        {
+            damageable.TakeDamage(100);
+        }
     }
 
     private Vector3 GetDirection(Vector2 inputDir)
