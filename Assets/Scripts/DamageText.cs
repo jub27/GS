@@ -1,21 +1,32 @@
+using TMPro;
 using UnityEngine;
-using UnityEngine.Pool;
+using DG.Tweening;
 
 public class DamageText : MonoBehaviour
 {
-    private static ListPool<DamageText> pool = null;
-
+    private TextMeshPro textMesh;
     private void Awake()
     {
-        if(pool == null)
-        {
-            pool = new ListPool<DamageText>();
-        }
+        textMesh = GetComponent<TextMeshPro>();
     }
 
-    // Update is called once per frame
+    public void SetText(string str)
+    {
+        textMesh.text = str;
+    }
+
+    public void StartAnimation()
+    {
+        transform.DOLocalMoveY(0.7f, 0.8f).SetRelative();
+        transform.localScale = Vector3.one;
+        transform.DOScale(0.7f, 0.81f).OnComplete(()=>
+        {
+            DamageTextManager.Instance.Pool.Release(this);
+        });
+    }
+
     void Update()
     {
-        transform.rotation = Camera.main.transform.rotation;
+        transform.forward = Camera.main.transform.forward;
     }
 }

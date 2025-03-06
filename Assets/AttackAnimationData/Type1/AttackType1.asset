@@ -17,7 +17,3 @@ MonoBehaviour:
   - {fileID: 7364936370289906279, guid: 424b48e215da05b4fba21c2e7b3c4aed, type: 3}
   - {fileID: 7364936370289906279, guid: 836282e4a8faa904385e96fda2ba3ae7, type: 3}
   - {fileID: 7364936370289906279, guid: dafa4c9adf5edcf4f8e09aabb99bff42, type: 3}
-  colliders:
-  - {fileID: 170602257485312923, guid: 424b48e215da05b4fba21c2e7b3c4aed, type: 3}
-  - {fileID: 4514456689662118297, guid: 836282e4a8faa904385e96fda2ba3ae7, type: 3}
-  - {fileID: 7033838738862281618, guid: dafa4c9adf5edcf4f8e09aabb99bff42, type: 3}

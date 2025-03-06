@@ -18,6 +18,7 @@ public class Character : MonoBehaviour
     private float targetSpeed = 0;
     private Vector2 inputVector = Vector2.zero;
     private ParticleSystem[] attackEffects;
+    private Collider[] colliders;
     private Quaternion[] attackEffectsOriginLocalRotations;
     private Vector3[] attackEffectsOriginLocalPositions;
 
@@ -33,19 +34,23 @@ public class Character : MonoBehaviour
         }
     }
 
-    private void Awake() {
+    private void Awake()
+    {
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
         animator.runtimeAnimatorController = attackDataScriptableObject.animatorController;
         attackEffects = new ParticleSystem[attackDataScriptableObject.attackEffects.Length];
+        colliders = new Collider[attackDataScriptableObject.attackEffects.Length];
         attackEffectsOriginLocalRotations = new Quaternion[attackDataScriptableObject.attackEffects.Length];
         attackEffectsOriginLocalPositions = new Vector3[attackDataScriptableObject.attackEffects.Length];
-        for(int i = 0; i < attackEffects.Length; i++)
+        for (int i = 0; i < attackEffects.Length; i++)
         {
             attackEffects[i] = Instantiate(attackDataScriptableObject.attackEffects[i]);
             attackEffects[i].Stop();
             attackEffectsOriginLocalRotations[i] = attackEffects[i].transform.localRotation;
             attackEffectsOriginLocalPositions[i] = attackEffects[i].transform.localPosition;
+            colliders[i] = attackEffects[i].GetComponent<Collider>();
+            attackEffects[i].gameObject.SetActive(false);
         }
         characterStatData.CurHp = characterStatData.MaxHp;
         HpBar.Instance.SetCharacterStatData(characterStatData);
@@ -97,31 +102,29 @@ public class Character : MonoBehaviour
 
     public void ShowAttackEffect(int index)
     {
+        attackEffects[index].gameObject.SetActive(true);
         attackEffects[index].transform.position = transform.position + attackEffectsOriginLocalPositions[index];
         attackEffects[index].transform.rotation = transform.rotation * attackEffectsOriginLocalRotations[index];
         attackEffects[index].Play();
     }
 
+    public void HideAttackEffect(int index)
+    {
+        attackEffects[index].Stop();
+        attackEffects[index].gameObject.SetActive(false);
+    }
+
     public void EnableAttackCollider(int index)
     {
-        Debug.Log("@@");
-        attackDataScriptableObject.colliders[index].enabled = true;
+        colliders[index].enabled = true;
     }
 
     public void DisableAttackCollider(int index)
     {
-        Debug.Log("!!");
-        attackDataScriptableObject.colliders[index].enabled = false;
+        colliders[index].enabled = false;
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        IDamageable damageable = other.GetComponent<IDamageable>();
-        if(damageable != null)
-        {
-            damageable.TakeDamage(100);
-        }
-    }
+
 
     private Vector3 GetDirection(Vector2 inputDir)
     {
@@ -143,15 +146,14 @@ public class Character : MonoBehaviour
 
     private void Update()
     {
-        characterStatData.CurHp -= 1;
         Vector3 moveDir = GetDirection(inputVector);
         float speed = GetSpeed(inputVector);
         targetSpeed = Mathf.Lerp(targetSpeed, speed, 0.15f);
         animator.SetFloat("Move", targetSpeed / (WALK_SPEED * RUN_MULTIPLY));
-        
-        if(!IsMoveState)
+
+        if (!IsMoveState)
         {
-            if(animator.GetBool("IsGround"))
+            if (animator.GetBool("IsGround"))
                 speed = 0;
             moveDir = transform.forward;
         }
@@ -164,7 +166,7 @@ public class Character : MonoBehaviour
             characterController.Move((jump * Vector3.up + moveDir * speed) * Time.deltaTime);
         else
             characterController.Move((jump * Vector3.up + transform.forward * speed) * Time.deltaTime);
-        if(moveDir != Vector3.zero && characterController.isGrounded)
+        if (moveDir != Vector3.zero && characterController.isGrounded)
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(moveDir, Vector3.up), 0.15f);
         jump += Physics.gravity.y * Time.deltaTime;
         if (characterController.isGrounded)

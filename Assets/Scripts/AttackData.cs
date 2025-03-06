@@ -6,5 +6,4 @@ public class AttackData : ScriptableObject
 {
     public AnimatorController animatorController;
     public ParticleSystem[] attackEffects;
-    public Collider[] colliders;
 }

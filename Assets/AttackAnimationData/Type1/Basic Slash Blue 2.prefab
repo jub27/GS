@@ -9797,6 +9797,7 @@ GameObject:
   - component: {fileID: 4752034024110402706}
   - component: {fileID: 4514456689662118297}
   - component: {fileID: 82207737478947557}
+  - component: {fileID: -5912513465605503463}
   m_Layer: 6
   m_Name: Basic Slash Blue 2
   m_TagString: Untagged
@@ -14726,6 +14727,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &-5912513465605503463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5503505460791601945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5d7d7e8555486940bfe8e9202f84561, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8373613166400002822
 GameObject:
   m_ObjectHideFlags: 0
